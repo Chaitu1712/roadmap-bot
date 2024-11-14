@@ -30,8 +30,8 @@ public class NotificationScheduler {
 
         Trigger trigger = TriggerBuilder.newTrigger()
                 .withIdentity("trigger_" + date, "group1")
-                .startNow()
-                .withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(19, 45)) // 7.45 PM every day REPLACE WIHT YOUR REQUIRED TIME IN 24 HOUR FORMAT
+                .startNow() // Can customize start time here if needed
+                .withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(1, 51)) // 7.45 PM every day
                 .build();
         scheduler.scheduleJob(job, trigger);
     }

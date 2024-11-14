@@ -12,32 +12,38 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 public class RoadmapNotificationBot {
-    private static LocalDate startDate;
-    
+    private static LocalDate startDate;  // Start date will be loaded or set
+
     private static final String FILENAME = "start_date.txt";
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     public static void main(String[] args) throws IOException, SchedulerException {
-
+        // Load or initialize the start date
         startDate = loadStartDate();
         System.out.println("Start date is: " + startDate);
-
-        String pdfPath = "/PATH/TO/YOUR/ROADMAP.pdf";  // Replace with the actual path to the PDF file
+        // Path to the roadmap PDF file
+        String pdfPath = "./././././././trading_bot_roadmap.pdf";
 
         // Extract roadmap text from the PDF
         String roadmapText = PDFExtractor.extractTextFromPDF(pdfPath);
 
+        // Parse the extracted text to get tasks
         Map<String, String> tasks = RoadmapParser.parseRoadmap(roadmapText);
 
+        // Get the current date
         LocalDate today = LocalDate.now();
+        // Find the last day in the roadmap
           int lastDay = findLastDay(tasks);
-        String recipient = "YOUR MOBILE NO."; // Replace with the actual WhatsApp number
+        // WhatsApp recipient (replace with actual WhatsApp number)
+        String recipient = "+917454841110";  // Replace with the recipient's WhatsApp number
 
         // Loop through the tasks and schedule notifications only for today
         for (Map.Entry<String, String> entry : tasks.entrySet()) {
             String dayKey = entry.getKey(); // e.g., "Day 1-2", "Day 3-4"
             String task = entry.getValue();
 
+            // Extract day number from dayKey (simple method, modify if needed)
             if (dayMatchesToday(dayKey, today)) {
+                // Schedule a daily notification for today's task
                 NotificationScheduler.scheduleDailyReminder(task, recipient, today);
             }
         }
@@ -81,12 +87,14 @@ public class RoadmapNotificationBot {
                 return LocalDate.parse(dateString, formatter);
             }
         } else {
+            // File doesn't exist, set today's date as start date and save it
             LocalDate today = LocalDate.now();
             saveStartDate(today);
             return today;
         }
     }
 
+    // Save the start date to a file
     private static void saveStartDate(LocalDate startDate) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILENAME))) {
             writer.write(startDate.format(formatter));
